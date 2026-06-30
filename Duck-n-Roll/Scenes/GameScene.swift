@@ -1,6 +1,6 @@
 //
 //  GameScene.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Core gameplay. Boulders & balls roll down a perspective hill; the player
 //  DRAGS to run around (including up the hill to grab tokens) and TAPS to hop.

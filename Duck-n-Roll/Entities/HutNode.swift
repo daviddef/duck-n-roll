@@ -1,6 +1,6 @@
 //
 //  HutNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  The cosy home base / earthquake shelter — a warm timber cottage with shaded
 //  plank walls, a shingled terracotta roof, a glowing arched doorway the duck can

@@ -1,6 +1,6 @@
 //
 //  GameViewController.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Hosts the SpriteKit view and presents the first scene (the menu).
 //

@@ -1,6 +1,6 @@
 //
 //  Color+Extensions.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Tiny helpers for deriving shade variants used by the procedural art.
 //

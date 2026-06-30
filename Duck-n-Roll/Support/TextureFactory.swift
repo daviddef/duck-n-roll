@@ -1,6 +1,6 @@
 //
 //  TextureFactory.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Procedurally renders rich, shaded sprites (gradients, gloss, soft shadows,
 //  rock texture, mist) into cached SKTextures. This is what gives the game its

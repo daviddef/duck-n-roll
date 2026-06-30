@@ -1,6 +1,6 @@
 //
 //  Backdrop.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Storybook-painterly scenery shared by every scene: a deep gradient sky, a
 //  soft sun with halo, drifting clouds, three layers of misty parallax mountains

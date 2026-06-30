@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		1A0000000000000000000005 /* MateoDuckGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MateoDuckGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000000000000000000005 /* Duck-n-Roll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Duck-n-Roll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1A0000000000000000000006 /* MateoDuckGame */ = {
+		1A0000000000000000000006 /* Duck-n-Roll */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MateoDuckGame;
+			path = Duck-n-Roll;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		1A0000000000000000000002 = {
 			isa = PBXGroup;
 			children = (
-				1A0000000000000000000006 /* MateoDuckGame */,
+				1A0000000000000000000006 /* Duck-n-Roll */,
 				1A0000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		1A0000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000000000000000000005 /* MateoDuckGame.app */,
+				1A0000000000000000000005 /* Duck-n-Roll.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1A0000000000000000000004 /* MateoDuckGame */ = {
+		1A0000000000000000000004 /* Duck-n-Roll */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1A000000000000000000000B /* Build configuration list for PBXNativeTarget "MateoDuckGame" */;
+			buildConfigurationList = 1A000000000000000000000B /* Build configuration list for PBXNativeTarget "Duck-n-Roll" */;
 			buildPhases = (
 				1A0000000000000000000007 /* Sources */,
 				1A0000000000000000000008 /* Frameworks */,
@@ -61,11 +61,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				1A0000000000000000000006 /* MateoDuckGame */,
+				1A0000000000000000000006 /* Duck-n-Roll */,
 			);
-			name = MateoDuckGame;
-			productName = MateoDuckGame;
-			productReference = 1A0000000000000000000005 /* MateoDuckGame.app */;
+			name = Duck-n-Roll;
+			productName = Duck-n-Roll;
+			productReference = 1A0000000000000000000005 /* Duck-n-Roll.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -83,7 +83,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 1A000000000000000000000A /* Build configuration list for PBXProject "MateoDuckGame" */;
+			buildConfigurationList = 1A000000000000000000000A /* Build configuration list for PBXProject "Duck-n-Roll" */;
 			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -98,7 +98,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1A0000000000000000000004 /* MateoDuckGame */,
+				1A0000000000000000000004 /* Duck-n-Roll */,
 			);
 		};
 /* End PBXProject section */
@@ -265,7 +265,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.MateoDuckGame;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.Duck-n-Roll;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -295,7 +295,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.MateoDuckGame;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.Duck-n-Roll;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -306,7 +306,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1A000000000000000000000A /* Build configuration list for PBXProject "MateoDuckGame" */ = {
+		1A000000000000000000000A /* Build configuration list for PBXProject "Duck-n-Roll" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1A000000000000000000000C /* Debug */,
@@ -315,7 +315,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1A000000000000000000000B /* Build configuration list for PBXNativeTarget "MateoDuckGame" */ = {
+		1A000000000000000000000B /* Build configuration list for PBXNativeTarget "Duck-n-Roll" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1A000000000000000000000E /* Debug */,

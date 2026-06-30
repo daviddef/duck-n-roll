@@ -1,6 +1,6 @@
 //
 //  CollectibleNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Tokens — coins, candy and gems — that appear up the hill. The player runs up
 //  to grab them (risk: obstacles up there, and being far from the hut when a

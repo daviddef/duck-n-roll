@@ -1,6 +1,6 @@
 //
 //  UpgradeScene.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Spend coins on permanent Speed and Jump upgrades. Reachable from the menu and
 //  shown automatically after clearing a level.

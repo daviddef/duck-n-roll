@@ -1,6 +1,6 @@
 //
 //  LevelConfig.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Data-driven difficulty. A single function derives every level (1...30) from
 //  smooth curves, so balancing the whole game is a matter of tweaking constants

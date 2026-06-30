@@ -1,6 +1,6 @@
 //
 //  GameState.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Single source of truth for meta-progression that survives between scenes and
 //  app launches: coins, the highest level reached, and the permanent speed /

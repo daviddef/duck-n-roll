@@ -1,6 +1,6 @@
 //
 //  ObstacleNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Boulders and balls that roll down the hill toward the player, drawn with
 //  shaded textures (glossy sphere / cracked rock). They grow as they approach to

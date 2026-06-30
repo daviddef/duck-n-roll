@@ -1,6 +1,6 @@
 //
 //  Theme.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Central place for colors, fonts, z-positions and physics categories so the
 //  look of the game can be tuned in one spot.

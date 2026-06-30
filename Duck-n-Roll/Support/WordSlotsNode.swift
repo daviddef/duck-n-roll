@@ -1,6 +1,6 @@
 //
 //  WordSlotsNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  The target word shown at the top of the play screen as a row of letter tiles.
 //  Locked letters fill in green; the next letter you need glows so a young player

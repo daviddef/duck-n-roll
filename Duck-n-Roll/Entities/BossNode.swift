@@ -1,6 +1,6 @@
 //
 //  BossNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  The level-30 boss: a hulking boulder-golem at the top of the hill. The player
 //  must dodge its barrages and shoot it down in the final punch-up.

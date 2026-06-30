@@ -1,6 +1,6 @@
 //
 //  MenuScene.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Title screen: shows coins, the current evolution form, a level chooser, and
 //  routes into the game or the upgrade shop.

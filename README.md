@@ -14,7 +14,7 @@ difficulty/evolution data already scales across all 30 levels + the boss.
 ## Requirements
 
 - **Xcode 16 or newer** (the project uses Xcode 16 "synchronized" folder groups, so
-  every `.swift` file under `MateoDuckGame/` is included automatically — no manual
+  every `.swift` file under `Duck-n-Roll/` is included automatically — no manual
   file management).
 - iOS 16+ device or Simulator.
 - No third-party dependencies, **no image/audio assets** — all art is drawn
@@ -22,12 +22,12 @@ difficulty/evolution data already scales across all 30 levels + the boss.
 
 ## Run it
 
-1. Open `MateoDuckGame.xcodeproj` in Xcode.
+1. Open `Duck-n-Roll.xcodeproj` in Xcode.
 2. Select an iPhone simulator (e.g. iPhone 15) or your device.
 3. Press **Run** (⌘R).
 
 If you run on a physical device, set your signing **Team** under
-*Target → Signing & Capabilities* (the bundle id is `com.mateo.MateoDuckGame`).
+*Target → Signing & Capabilities* (the bundle id is `com.mateo.Duck-n-Roll`).
 
 ---
 
@@ -54,7 +54,7 @@ If you run on a physical device, set your signing **Team** under
 ## Project layout
 
 ```
-MateoDuckGame/
+Duck-n-Roll/
 ├── App/
 │   ├── AppDelegate.swift          # window + lifecycle (no storyboard)
 │   └── GameViewController.swift   # hosts the SKView, presents MenuScene

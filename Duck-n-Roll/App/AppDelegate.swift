@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Classic AppDelegate lifecycle (no storyboard, no scene manifest).
 //  Builds the window programmatically and installs GameViewController.

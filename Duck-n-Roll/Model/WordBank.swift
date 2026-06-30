@@ -1,6 +1,6 @@
 //
 //  WordBank.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Built-in spelling words, grouped into difficulty tiers that grow from 3-letter
 //  words up to 6, themed around the duck / nature world. Each word carries an

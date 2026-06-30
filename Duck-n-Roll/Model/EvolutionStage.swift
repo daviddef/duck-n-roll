@@ -1,6 +1,6 @@
 //
 //  EvolutionStage.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  The character evolves as the player climbs the 30 levels. Each stage changes
 //  the look (size, colour, crest) and is purely cosmetic + a size scalar that

@@ -1,6 +1,6 @@
 //
 //  ProjectileNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  A glowing energy bolt fired up the hill at obstacles (unlocked from level 3).
 //  Higher evolution forms tint it to match their plumage.

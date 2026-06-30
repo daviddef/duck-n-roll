@@ -1,6 +1,6 @@
 //
 //  ButtonNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  A glossy "candy" button (gradient face, 3D lip, drop shadow) used across the
 //  menus and HUD. Tap handling is done by the owning scene via the `onTap`

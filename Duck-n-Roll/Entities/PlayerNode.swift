@@ -1,6 +1,6 @@
 //
 //  PlayerNode.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  The hero, drawn with shaded gradient spheres (via TextureFactory) for a soft
 //  3D look plus a ground shadow, cheek blush, blink and a wing flap. Restyles

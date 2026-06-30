@@ -1,6 +1,6 @@
 //
 //  Haptics.swift
-//  MateoDuckGame
+//  Duck-n-Roll
 //
 //  Thin wrapper over UIKit's feedback generators. Generators are kept warm with
 //  prepare() so the taps fire with minimal latency during play. No-ops on the
