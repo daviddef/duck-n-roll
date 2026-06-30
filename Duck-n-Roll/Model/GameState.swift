@@ -70,6 +70,23 @@ final class GameState {
         set { defaults.set(newValue, forKey: "mdg.useCave") }
     }
 
+    /// Recently-shown words (persisted) so picks don't repeat soon.
+    private var recentWords: [String] {
+        get { defaults.stringArray(forKey: "mdg.recentWords") ?? [] }
+        set { defaults.set(newValue, forKey: "mdg.recentWords") }
+    }
+    private let recentWordsCap = 16
+
+    /// Pick a fresh, level-appropriate word and remember it.
+    func pickWord(forLevel level: Int) -> WordEntry {
+        let entry = WordBank.randomWord(forLevel: level, avoiding: recentWords)
+        var r = recentWords
+        r.append(entry.word)
+        if r.count > recentWordsCap { r.removeFirst(r.count - recentWordsCap) }
+        recentWords = r
+        return entry
+    }
+
     /// The level the player is about to play. Not persisted — set by the menu.
     var currentLevel: Int = 1
 

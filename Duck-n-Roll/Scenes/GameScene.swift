@@ -156,11 +156,8 @@ final class GameScene: SKScene {
     // MARK: - Spelling setup
 
     private func setupSpelling() {
-        switch mode {
-        case .word:   loadWord(WordBank.word(forLevel: config.level))
-        case .streak: loadWord(WordBank.randomWord(forLevel: config.level, avoiding: nil))
-        case .boss:   loadWord(WordBank.randomWord(forLevel: config.level, avoiding: nil))
-        }
+        // Random, level-appropriate word (avoids recently-seen ones).
+        loadWord(state.pickWord(forLevel: config.level))
     }
 
     private func loadWord(_ entry: WordEntry) {
@@ -821,14 +818,12 @@ final class GameScene: SKScene {
                 self.streakLabel.text = "✓ \(self.wordsCompleted)"
                 self.addCoins(20)
                 self.isCelebratingWord = false
-                self.loadWord(WordBank.randomWord(forLevel: self.config.level,
-                                                  avoiding: entry?.word))
+                self.loadWord(self.state.pickWord(forLevel: self.config.level))
             case .boss:
                 self.addCoins(10)
                 self.isCelebratingWord = false
                 if self.boss?.isDefeated == true { return }
-                self.loadWord(WordBank.randomWord(forLevel: self.config.level,
-                                                  avoiding: entry?.word))
+                self.loadWord(self.state.pickWord(forLevel: self.config.level))
             }
         }
     }
@@ -1134,7 +1129,7 @@ final class GameScene: SKScene {
         if nextStage.index != curStage.index {
             sub.text = "🌟 Evolving into \(nextStage.name)!"
         } else if nextCfg.mode == .word {
-            sub.text = "Spell:  \(WordBank.word(forLevel: next).word)"
+            sub.text = "Spell a \(WordBank.wordLength(forLevel: next))-letter word!"
         } else {
             sub.text = "Get ready!"
         }

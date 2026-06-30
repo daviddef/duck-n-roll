@@ -138,7 +138,7 @@ final class MenuScene: SKScene {
         // Preview what this level asks you to spell.
         let cfg = LevelConfig.config(for: selectedLevel)
         switch cfg.mode {
-        case .word:   stageLabel.text = "Spell:  \(WordBank.word(forLevel: selectedLevel).word)"
+        case .word:   stageLabel.text = "Spell \(WordBank.wordLength(forLevel: selectedLevel))-letter words"
         case .streak: stageLabel.text = "★ Streak round! ★"
         case .boss:   stageLabel.text = "Boss spell-off!"
         }
