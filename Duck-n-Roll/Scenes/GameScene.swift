@@ -162,7 +162,7 @@ final class GameScene: SKScene {
         currentWord = entry.letters
         spelledIndex = 0
         timeSinceNeeded = 0
-        wordSlots.setWord(currentWord)
+        wordSlots.setWord(currentWord, maxWidth: size.width - 96)
         // little entrance pop
         wordSlots.setScale(0.6); wordSlots.alpha = 0
         wordSlots.run(.group([.scale(to: 1.0, duration: 0.25), .fadeIn(withDuration: 0.25)]))
@@ -193,10 +193,10 @@ final class GameScene: SKScene {
         case .streak: levelLabel.text = "STREAK ★ LVL \(config.level)"
         case .word:   levelLabel.text = "LEVEL \(config.level)"
         }
-        levelLabel.fontSize = 18
+        levelLabel.fontSize = 16
         levelLabel.fontColor = Palette.ink
         levelLabel.horizontalAlignmentMode = .left
-        levelLabel.position = CGPoint(x: sideMargin, y: h - 52)
+        levelLabel.position = CGPoint(x: sideMargin + 44, y: h - 50)
         hudLayer.addChild(levelLabel)
 
         // Timer bar — only used in streak rounds (word levels track via the slots).
@@ -205,12 +205,12 @@ final class GameScene: SKScene {
         barBG.fillColor = Palette.panel
         barBG.strokeColor = .white
         barBG.lineWidth = 1
-        barBG.position = CGPoint(x: w / 2, y: h - 142)
+        barBG.position = CGPoint(x: w / 2, y: h - 172)
         hudLayer.addChild(barBG)
         progressFill.color = Palette.coin
         progressFill.size = CGSize(width: progressBarWidth, height: 10)
         progressFill.anchorPoint = CGPoint(x: 0, y: 0.5)
-        progressFill.position = CGPoint(x: w / 2 - progressBarWidth / 2, y: h - 142)
+        progressFill.position = CGPoint(x: w / 2 - progressBarWidth / 2, y: h - 172)
         progressFill.xScale = 0.001
         hudLayer.addChild(progressFill)
         let showTimeBar = (mode == .streak)
@@ -240,7 +240,7 @@ final class GameScene: SKScene {
         updateLivesLabel()
 
         // Word slots (the spelling target)
-        wordSlots.position = CGPoint(x: w / 2, y: h - 104)
+        wordSlots.position = CGPoint(x: w / 2, y: h - 122)
         hudLayer.addChild(wordSlots)
 
         // Streak counter (streak rounds only)
@@ -248,14 +248,14 @@ final class GameScene: SKScene {
         streakLabel.fontSize = 18
         streakLabel.fontColor = Palette.coin
         streakLabel.horizontalAlignmentMode = .left
-        streakLabel.position = CGPoint(x: sideMargin, y: h - 78)
+        streakLabel.position = CGPoint(x: sideMargin, y: h - 172)
         streakLabel.isHidden = (mode != .streak)
         hudLayer.addChild(streakLabel)
 
-        // Pause / menu
-        menuButton = ButtonNode(text: "II", size: CGSize(width: 44, height: 44),
+        // Pause / menu (top-left)
+        menuButton = ButtonNode(text: "II", size: CGSize(width: 42, height: 42),
                                 color: .white, fontSize: 18)
-        menuButton.position = CGPoint(x: sideMargin + 14, y: h - 110)
+        menuButton.position = CGPoint(x: sideMargin + 12, y: h - 50)
         hudLayer.addChild(menuButton)
 
         // Movable SHOOT icon
