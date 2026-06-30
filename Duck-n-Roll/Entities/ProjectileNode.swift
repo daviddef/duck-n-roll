@@ -10,6 +10,9 @@ import SpriteKit
 
 final class ProjectileNode: SKNode {
 
+    /// Per-frame travel direction (set by the weapon). Default straight up.
+    var velocity = CGVector(dx: 0, dy: 1)
+
     init(tint: SKColor = Palette.projectile) {
         super.init()
 

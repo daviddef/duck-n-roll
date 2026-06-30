@@ -51,12 +51,13 @@ final class GameScene: SKScene {
     private let hudLayer = SKNode()
     private let overlayLayer = SKNode()
     private let player = PlayerNode()
-    private let hut = HutNode()
+    private var hut: (SKNode & Shelter)!
     private var boss: BossNode?
 
     private var obstacles: [ObstacleNode] = []
     private var collectibles: [CollectibleNode] = []
-    private var projectiles: [SKNode] = []
+    private var creatures: [CreatureNode] = []
+    private var projectiles: [ProjectileNode] = []
 
     // MARK: - Input
     private var duckTarget: CGPoint = .zero
@@ -69,11 +70,13 @@ final class GameScene: SKScene {
     private let moveThreshold: CGFloat = 14
     private var shootIcon: SKNode?
     private let shootIconRadius: CGFloat = 36
+    private var shootHeld = false        // hold the icon to keep firing
 
     // MARK: - Spawning / earthquake
     private var spawnAccumulator: TimeInterval = 0
     private var collectibleAccumulator: TimeInterval = 0
     private let collectibleInterval: TimeInterval = 2.1
+    private var creatureAccumulator: TimeInterval = 0
     private var fireCooldown: TimeInterval = 0
     private enum QuakePhase { case calm, warning }
     private var quakePhase: QuakePhase = .calm
@@ -98,6 +101,7 @@ final class GameScene: SKScene {
         backgroundColor = Palette.skyBottom
         Backdrop.install(in: self)
         Haptics.shared.prepareAll()
+        view.isMultipleTouchEnabled = true   // two-finger play: move + fire at once
 
         playfield.zPosition = 0
         addChild(playfield)
@@ -122,7 +126,9 @@ final class GameScene: SKScene {
     // MARK: - Setup
 
     private func setupHut() {
-        // Bottom-left cottage the duck runs into.
+        // Bottom-left home base the duck runs into. Pass -cave to use the cave.
+        let useCave = ProcessInfo.processInfo.arguments.contains("-cave") || GameState.shared.useCave
+        hut = useCave ? CaveNode() : HutNode()
         hut.position = CGPoint(x: sideMargin + 66, y: size.height * 0.115)
         hut.zPosition = Z.hut
         playfield.addChild(hut)
@@ -398,8 +404,10 @@ final class GameScene: SKScene {
             if hitTest(menuButton, p) { menuButton.animatePress(); Haptics.shared.uiTap(); quitToMenu(); return }
             guard isRunning else { continue }
 
-            if let icon = shootIcon, shootTouch == nil, dist(p, icon.position) < shootIconRadius + 8 {
+            if let icon = shootIcon, shootTouch == nil, dist(p, icon.position) < shootIconRadius + 12 {
                 shootTouch = t; shootTouchMoved = false; shootTouchStart = p
+                shootHeld = true
+                doShoot()                 // fire immediately; hold keeps firing
                 continue
             }
             if duckTouch == nil && !isSheltering {
@@ -412,7 +420,9 @@ final class GameScene: SKScene {
         for t in touches {
             let p = t.location(in: self)
             if t === shootTouch {
-                if !shootTouchMoved && dist(p, shootTouchStart) > moveThreshold { shootTouchMoved = true }
+                if !shootTouchMoved && dist(p, shootTouchStart) > moveThreshold {
+                    shootTouchMoved = true; shootHeld = false   // dragging = reposition, not fire
+                }
                 if shootTouchMoved { shootIcon?.position = clampIcon(p) }
             } else if t === duckTouch {
                 if !duckTouchMoved && dist(p, duckTouchStart) > moveThreshold { duckTouchMoved = true }
@@ -424,7 +434,7 @@ final class GameScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
             if t === shootTouch {
-                if !shootTouchMoved { doShoot() }
+                shootHeld = false
                 shootTouch = nil
             } else if t === duckTouch {
                 if !duckTouchMoved && !isSheltering { doJump() }
@@ -434,7 +444,7 @@ final class GameScene: SKScene {
     }
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-            if t === shootTouch { shootTouch = nil }
+            if t === shootTouch { shootHeld = false; shootTouch = nil }
             else if t === duckTouch { duckTouch = nil }
         }
     }
@@ -462,17 +472,29 @@ final class GameScene: SKScene {
 
     private func doShoot() {
         guard fireCooldown <= 0 else { return }
-        fireCooldown = 0.32
+        let weapon = state.weapon
+        fireCooldown = weapon.cooldown
         Haptics.shared.shoot()
-        let bolt = ProjectileNode(tint: EvolutionStage.stage(forLevel: config.level).bodyColor.lighter(0.2))
-        bolt.position = CGPoint(x: player.position.x, y: player.position.y + 22)
-        bolt.zPosition = Z.projectile
-        playfield.addChild(bolt)
-        projectiles.append(bolt)
+        let tint = EvolutionStage.stage(forLevel: config.level).bodyColor.lighter(0.2)
+        let origin = CGPoint(x: player.position.x, y: player.position.y + 22)
+
+        let n = weapon.bolts
+        for i in 0..<n {
+            // fan the bolts across the spread angle
+            let frac = n == 1 ? 0 : (CGFloat(i) / CGFloat(n - 1) - 0.5)   // -0.5...0.5
+            let angle = frac * weapon.spread
+            let bolt = ProjectileNode(tint: tint)
+            bolt.velocity = CGVector(dx: sin(angle), dy: cos(angle))
+            bolt.zRotation = -angle
+            bolt.position = origin
+            bolt.zPosition = Z.projectile
+            playfield.addChild(bolt)
+            projectiles.append(bolt)
+        }
         let flash = SKShapeNode(circleOfRadius: 14)
-        flash.fillColor = Palette.projectile.withAlphaComponent(0.7)
+        flash.fillColor = tint.withAlphaComponent(0.7)
         flash.strokeColor = .clear
-        flash.position = bolt.position
+        flash.position = origin
         flash.zPosition = Z.projectile - 0.1
         playfield.addChild(flash)
         flash.run(.sequence([.group([.scale(to: 1.8, duration: 0.12), .fadeOut(withDuration: 0.12)]),
@@ -492,9 +514,13 @@ final class GameScene: SKScene {
         if graceTimer > 0 { graceTimer -= dt }
         timeSinceNeeded += dt
 
+        // Hold the shoot icon to keep firing (works while the other finger moves).
+        if shootHeld && shootTouch != nil && !shootTouchMoved { doShoot() }
+
         updatePlayerMovement(dt)
         updateSpawning(dt)
         updateObstacles(dt)
+        updateCreatures(dt)
         updateCollectibles(dt)
         updateProjectiles(dt)
         updateEarthquake(dt)
@@ -531,7 +557,57 @@ final class GameScene: SKScene {
                 collectibleAccumulator -= collectibleInterval
                 spawnCollectible()
             }
+            // Hazard critters up the hill — more frequent at higher levels.
+            let t = CGFloat(config.level - 1) / 29
+            let creatureInterval = TimeInterval(7.0 - 4.0 * t)   // 7s -> 3s
+            creatureAccumulator += dt
+            if config.level >= 3 && creatures.count < 3 && creatureAccumulator >= creatureInterval {
+                creatureAccumulator = 0
+                spawnCreature()
+            }
         }
+    }
+
+    // MARK: - Creatures (lethal hazards up the hill)
+
+    private func spawnCreature() {
+        let kind = CreatureKind.allCases.randomElement()!
+        let c = CreatureNode(kind: kind, speed: CGFloat.random(in: 55...95))
+        let y = CGFloat.random(in: size.height * 0.32 ... roamYMax)
+        c.position = CGPoint(x: CGFloat.random(in: sideMargin + 40 ... size.width - sideMargin - 40), y: y)
+        let p = (spawnY - y) / (spawnY - nearPlaneY)
+        c.setScale(max(0.7, 1.05 - 0.4 * p))
+        c.zPosition = Z.obstacle - 0.4
+        c.alpha = 0
+        c.run(.fadeIn(withDuration: 0.3))
+        playfield.addChild(c)
+        creatures.append(c)
+    }
+
+    private func updateCreatures(_ dt: TimeInterval) {
+        for c in creatures where c.parent != nil {
+            c.life -= dt
+            // patrol horizontally, bounce off the edges
+            c.position.x += c.patrolDir * c.crawlSpeed * CGFloat(dt)
+            if c.position.x < sideMargin + 20 { c.patrolDir = 1 }
+            if c.position.x > size.width - sideMargin - 20 { c.patrolDir = -1 }
+            c.xScale = abs(c.xScale) * (c.patrolDir >= 0 ? 1 : -1)   // face travel direction
+
+            if c.life <= 0 && !c.scored {
+                c.scored = true
+                c.run(.sequence([.fadeOut(withDuration: 0.3), .removeFromParent()]))
+                continue
+            }
+            // lethal contact (can't touch — jumping doesn't save you)
+            if !c.scored && !isSheltering && !player.isInvulnerable && graceTimer <= 0 {
+                if dist(c.position, player.position) < c.hitRadius + 16 * player.stage.scale {
+                    c.scored = true
+                    burst(at: c.position, color: SKColor(red: 0.6, green: 0.3, blue: 0.7, alpha: 1))
+                    loseLife(reason: "YUCK!")
+                }
+            }
+        }
+        creatures.removeAll { $0.parent == nil }
     }
 
     // MARK: - Obstacles
@@ -664,7 +740,8 @@ final class GameScene: SKScene {
     private func updateProjectiles(_ dt: TimeInterval) {
         let speed: CGFloat = 780
         for bolt in projectiles where bolt.parent != nil {
-            bolt.position.y += speed * CGFloat(dt)
+            bolt.position.x += bolt.velocity.dx * speed * CGFloat(dt)
+            bolt.position.y += bolt.velocity.dy * speed * CGFloat(dt)
 
             if let target = obstacles.first(where: {
                 $0.parent != nil && !$0.scored &&
@@ -691,7 +768,8 @@ final class GameScene: SKScene {
                 continue
             }
 
-            if bolt.position.y > size.height + 30 { bolt.removeFromParent() }
+            if bolt.position.y > size.height + 30 || bolt.position.x < -30
+                || bolt.position.x > size.width + 30 { bolt.removeFromParent() }
         }
         projectiles.removeAll { $0.parent == nil }
     }
@@ -810,7 +888,7 @@ final class GameScene: SKScene {
             if quakeTimer <= config.quakeWarning { beginWarning() }
         case .warning:
             let intensity = CGFloat(1 - max(0, quakeTimer) / config.quakeWarning)
-            redOverlay.alpha = 0.10 + 0.22 * intensity * (0.6 + 0.4 * CGFloat(abs(sin(elapsed * 12))))
+            redOverlay.alpha = 0.12 + 0.30 * intensity * (0.6 + 0.4 * CGFloat(abs(sin(elapsed * 14))))
             if quakeTimer <= 0 { strikeQuake() }
         }
     }
@@ -821,21 +899,30 @@ final class GameScene: SKScene {
         hut.setWarning(active: true)
         warningBanner.run(.fadeAlpha(to: 1.0, duration: 0.2))
         warningBanner.run(.repeatForever(.sequence([
-            .scale(to: 1.05, duration: 0.3), .scale(to: 1.0, duration: 0.3)])), withKey: "pulse")
+            .scale(to: 1.07, duration: 0.25), .scale(to: 1.0, duration: 0.25)])), withKey: "pulse")
+        // building rumble that intensifies toward the strike
+        playfield.run(.repeatForever(.sequence([
+            .moveBy(x: 2.5, y: 1, duration: 0.05), .moveBy(x: -5, y: -2, duration: 0.05),
+            .moveBy(x: 2.5, y: 1, duration: 0.05)])), withKey: "rumble")
     }
 
     private func strikeQuake() {
         let safeCenter = CGPoint(x: hut.position.x + hut.doorOffset.x,
                                  y: hut.position.y + hut.doorOffset.y)
         let safe = dist(player.position, safeCenter) < hut.safeRadius
-        shakeScreen()
+
+        // --- the drama ---
+        playfield.removeAction(forKey: "rumble")
+        Haptics.shared.hit()
+        flashScreen(.white, alpha: 0.6)
+        shakeScreen(intensity: 26, count: 12)
+        bigQuakeRip(safe: safe)
 
         if safe {
-            floatingText("SAFE!", at: CGPoint(x: hut.position.x, y: hut.position.y + 90),
+            floatingText("SAFE!", at: CGPoint(x: hut.position.x, y: hut.position.y + 110),
                          color: Palette.coin, big: true)
             enterHut(door: safeCenter)
         } else {
-            spawnGroundCrack(at: player.position)
             loseLife(reason: "SWALLOWED!")
         }
 
@@ -844,7 +931,67 @@ final class GameScene: SKScene {
         hut.setWarning(active: false)
         warningBanner.removeAction(forKey: "pulse")
         warningBanner.run(.fadeAlpha(to: 0.0, duration: 0.25))
-        redOverlay.run(.fadeAlpha(to: 0.0, duration: 0.3))
+        redOverlay.run(.sequence([.fadeAlpha(to: 0.55, duration: 0.04),
+                                  .fadeAlpha(to: 0.0, duration: 0.6)]))
+    }
+
+    /// A jagged chasm rips across the whole screen, flinging debris.
+    private func bigQuakeRip(safe: Bool) {
+        let ripY = size.height * 0.13
+        let gap: CGFloat = 34
+        let crack = SKShapeNode(path: fullWidthRipPath(width: size.width, gap: gap))
+        crack.fillColor = SKColor(red: 0.03, green: 0.02, blue: 0.05, alpha: 1)
+        crack.strokeColor = Palette.warning
+        crack.lineWidth = 2.5
+        crack.position = CGPoint(x: 0, y: ripY)
+        crack.zPosition = Z.player - 0.5
+        crack.alpha = 0
+        crack.yScale = 0.1
+        playfield.addChild(crack)
+        // molten glow seam
+        let seam = SKShapeNode(rectOf: CGSize(width: size.width, height: 4))
+        seam.fillColor = SKColor(red: 1.0, green: 0.5, blue: 0.2, alpha: 0.9)
+        seam.strokeColor = .clear
+        seam.glowWidth = 8
+        seam.position = CGPoint(x: size.width / 2, y: ripY)
+        seam.zPosition = Z.player - 0.4
+        seam.alpha = 0
+        playfield.addChild(seam)
+
+        let open = SKAction.group([.fadeAlpha(to: 1, duration: 0.1), .scaleY(to: 1, duration: 0.16)])
+        crack.run(.sequence([open, .wait(forDuration: 0.7), .fadeOut(withDuration: 0.5), .removeFromParent()]))
+        seam.run(.sequence([.fadeAlpha(to: 1, duration: 0.1), .wait(forDuration: 0.5),
+                            .fadeOut(withDuration: 0.5), .removeFromParent()]))
+
+        // debris flung upward from the rip
+        for _ in 0..<16 {
+            let shard = SKShapeNode(path: crackPath())
+            shard.setScale(CGFloat.random(in: 0.18...0.4))
+            shard.fillColor = Palette.boulder.darker(CGFloat.random(in: 0...0.2))
+            shard.strokeColor = .clear
+            shard.position = CGPoint(x: CGFloat.random(in: 20...(size.width - 20)), y: ripY)
+            shard.zPosition = Z.effects
+            playfield.addChild(shard)
+            let up = CGFloat.random(in: 90...190)
+            shard.run(.sequence([
+                .group([.moveBy(x: CGFloat.random(in: -40...40), y: up, duration: 0.35),
+                        .rotate(byAngle: CGFloat.random(in: -6...6), duration: 0.7)]),
+                .group([.moveBy(x: 0, y: -up - 40, duration: 0.4), .fadeOut(withDuration: 0.4)]),
+                .removeFromParent()]))
+        }
+    }
+
+    private func fullWidthRipPath(width: CGFloat, gap: CGFloat) -> CGPath {
+        let p = CGMutablePath()
+        let step: CGFloat = 26
+        var x: CGFloat = 0
+        p.move(to: CGPoint(x: 0, y: 0))
+        // jagged top edge L->R
+        while x < width { x += step; p.addLine(to: CGPoint(x: min(x, width), y: CGFloat.random(in: -6...10))) }
+        // jagged bottom edge R->L (offset down by gap)
+        while x > 0 { x -= step; p.addLine(to: CGPoint(x: max(x, 0), y: -gap + CGFloat.random(in: -8...6))) }
+        p.closeSubpath()
+        return p
     }
 
     /// Run the duck into the cottage doorway, then pop back out.
@@ -936,40 +1083,114 @@ final class GameScene: SKScene {
         guard isRunning else { return }
         isRunning = false
         Haptics.shared.levelClear()
-        let bonus = config.clearBonus
-        addCoins(bonus)
+        addCoins(config.clearBonus)
         state.levelCleared(config.level)
         player.celebrate()
 
-        let isFinal = config.level >= LevelConfig.maxLevel
-        let sub: String
-        switch mode {
-        case .streak: sub = "\(wordsCompleted) words spelled • \(mistakes) misses"
-        case .boss:   sub = isFinal ? "Spelled the boss into the ground!" : "Boss down!"
-        case .word:   sub = "Spelled \(currentEntry?.word ?? "") • \(mistakes) misses"
-        }
-        let panel = makeResultPanel(
-            title: isFinal ? "YOU WON!" : "LEVEL \(config.level) CLEAR!",
-            subtitle: sub,
-            coins: runCoins)
-        overlayLayer.addChild(panel)
-        let primary = isFinal ? "FINISH" : "NEXT"
-        addPanelButton(to: panel, text: primary, yOffset: -90, color: Palette.coin) { [weak self] in
-            self?.proceedAfterWin(isFinal: isFinal)
-        }
-        addPanelButton(to: panel, text: "MENU", yOffset: -156, color: Palette.projectile) { [weak self] in
-            self?.quitToMenu()
+        if config.level >= LevelConfig.maxLevel {
+            let panel = makeResultPanel(title: "YOU WON!",
+                                        subtitle: "Duck 'n' Roll complete!", coins: runCoins)
+            overlayLayer.addChild(panel)
+            addPanelButton(to: panel, text: "MENU", yOffset: -110, color: Palette.coin) { [weak self] in
+                self?.quitToMenu()
+            }
+        } else {
+            showLevelTitleCard(next: config.level + 1)
         }
     }
 
-    private func proceedAfterWin(isFinal: Bool) {
-        if isFinal { quitToMenu(); return }
-        let next = min(config.level + 1, LevelConfig.maxLevel)
+    /// Dramatic next-level title that auto-advances straight into the next level.
+    private func showLevelTitleCard(next: Int) {
+        let nextCfg = LevelConfig.config(for: next)
+        let card = SKNode(); card.zPosition = Z.overlay
+        let dim = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.55), size: size)
+        dim.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        card.addChild(dim)
+        overlayLayer.addChild(card)
+
+        let clear = SKLabelNode(fontNamed: FontName.bold)
+        clear.text = "LEVEL \(config.level) CLEARED  •  +\(config.clearBonus)"
+        clear.fontSize = 20; clear.fontColor = Palette.coin
+        clear.position = CGPoint(x: size.width / 2, y: size.height * 0.66)
+        card.addChild(clear)
+
+        let big = SKLabelNode(fontNamed: FontName.heavy)
+        switch nextCfg.mode {
+        case .streak: big.text = "★ STREAK ROUND ★"
+        case .boss:   big.text = "FINAL BOSS"
+        case .word:   big.text = "LEVEL \(next)"
+        }
+        big.fontSize = nextCfg.mode == .word ? 64 : 44
+        big.fontColor = .white
+        big.position = CGPoint(x: size.width / 2, y: size.height * 0.54)
+        card.addChild(big)
+        big.setScale(0.2); big.alpha = 0
+        big.run(.group([.scale(to: 1.0, duration: 0.4), .fadeIn(withDuration: 0.3)]))
+        big.run(.repeatForever(.sequence([.scale(to: 1.05, duration: 0.6), .scale(to: 1.0, duration: 0.6)])))
+
+        let sub = SKLabelNode(fontNamed: FontName.demi)
+        let nextStage = EvolutionStage.stage(forLevel: next)
+        let curStage = EvolutionStage.stage(forLevel: config.level)
+        if nextStage.index != curStage.index {
+            sub.text = "🌟 Evolving into \(nextStage.name)!"
+        } else if nextCfg.mode == .word {
+            sub.text = "Spell:  \(WordBank.word(forLevel: next).word)"
+        } else {
+            sub.text = "Get ready!"
+        }
+        sub.fontSize = 20; sub.fontColor = .white
+        sub.position = CGPoint(x: size.width / 2, y: size.height * 0.45)
+        card.addChild(sub)
+
+        // celebratory confetti
+        for _ in 0..<22 {
+            let c = SKShapeNode(rectOf: CGSize(width: 9, height: 9), cornerRadius: 2)
+            c.fillColor = [Palette.coin, Palette.ball, Palette.projectile,
+                           SKColor(red: 0.4, green: 0.85, blue: 0.4, alpha: 1)].randomElement()!
+            c.strokeColor = .clear
+            c.position = CGPoint(x: CGFloat.random(in: 0...size.width), y: size.height + 20)
+            card.addChild(c)
+            c.run(.sequence([
+                .group([.moveBy(x: CGFloat.random(in: -40...40), y: -size.height - 40,
+                                duration: TimeInterval.random(in: 1.4...2.4)),
+                        .rotate(byAngle: CGFloat.random(in: -8...8), duration: 2)]),
+                .removeFromParent()]))
+        }
+
+        // optional UPGRADES tap (otherwise it auto-continues)
+        let upg = ButtonNode(text: "UPGRADES 🔫", size: CGSize(width: 230, height: 54),
+                             color: Palette.projectile, fontSize: 20)
+        upg.position = CGPoint(x: size.width / 2, y: size.height * 0.26)
+        upg.onTap = { [weak self] in
+            self?.removeAction(forKey: "advance")
+            self?.openShop(next: next)
+        }
+        card.addChild(upg)
+        panelButtons.append(upg)
+
+        let hint = SKLabelNode(fontNamed: FontName.demi)
+        hint.text = "continuing…"
+        hint.fontSize = 13; hint.fontColor = SKColor.white.withAlphaComponent(0.7)
+        hint.position = CGPoint(x: size.width / 2, y: size.height * 0.18)
+        card.addChild(hint)
+
+        run(.sequence([.wait(forDuration: 2.6), .run { [weak self] in self?.goToLevel(next) }]),
+            withKey: "advance")
+    }
+
+    private func openShop(next: Int) {
         let shop = UpgradeScene(size: size)
         shop.scaleMode = scaleMode
         shop.returnLevel = next
         shop.continueToNextLevel = true
-        view?.presentScene(shop, transition: .doorway(withDuration: 0.5))
+        view?.presentScene(shop, transition: .doorway(withDuration: 0.4))
+    }
+
+    private func goToLevel(_ next: Int) {
+        state.currentLevel = next
+        let scene = GameScene(size: size)
+        scene.scaleMode = scaleMode
+        view?.presentScene(scene, transition: .fade(with: .white, duration: 0.45))
     }
 
     private func gameOver() {

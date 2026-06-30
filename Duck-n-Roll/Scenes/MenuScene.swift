@@ -22,6 +22,7 @@ final class MenuScene: SKScene {
     private let upgradeButton = ButtonNode(text: "UPGRADES", color: Palette.projectile)
     private let prevButton    = ButtonNode(text: "◀", size: CGSize(width: 56, height: 56), color: .white, fontSize: 26)
     private let nextButton    = ButtonNode(text: "▶", size: CGSize(width: 56, height: 56), color: .white, fontSize: 26)
+    private let homeToggle    = ButtonNode(text: "🏠", size: CGSize(width: 50, height: 50), color: .white, fontSize: 22)
 
     override func didMove(to view: SKView) {
         backgroundColor = Palette.skyBottom
@@ -114,6 +115,12 @@ final class MenuScene: SKScene {
         upgradeButton.zPosition = Z.hud
         addChild(upgradeButton)
 
+        // Home-base toggle (house vs cave)
+        homeToggle.text = state.useCave ? "🕳️" : "🏠"
+        homeToggle.position = CGPoint(x: w - 38, y: h * 0.95)
+        homeToggle.zPosition = Z.hud
+        addChild(homeToggle)
+
         // Hint
         let hint = SKLabelNode(fontNamed: FontName.demi)
         hint.text = "Shoot the letters in order to spell the word • dodge balls • home for quakes"
@@ -145,11 +152,15 @@ final class MenuScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let p = touches.first?.location(in: self) else { return }
-        if [prevButton, nextButton, playButton, upgradeButton].contains(where: { $0.contains(parentPoint: p) }) {
+        if [prevButton, nextButton, playButton, upgradeButton, homeToggle].contains(where: { $0.contains(parentPoint: p) }) {
             Haptics.shared.uiTap()
         }
 
-        if prevButton.contains(parentPoint: p) {
+        if homeToggle.contains(parentPoint: p) {
+            homeToggle.animatePress()
+            state.useCave.toggle()
+            homeToggle.text = state.useCave ? "🕳️" : "🏠"
+        } else if prevButton.contains(parentPoint: p) {
             prevButton.animatePress()
             selectedLevel = max(1, selectedLevel - 1); refresh()
         } else if nextButton.contains(parentPoint: p) {

@@ -85,12 +85,14 @@ enum WordBank {
         return pick
     }
 
-    /// A pool of distinct letters useful as decoys (word letters + a little noise).
+    /// Decoy letters for "wrong" boulders — mostly random letters from the whole
+    /// alphabet (so kids actually have to read), with the word's own letters mixed
+    /// in for a little familiarity.
     static func decoyLetters(for word: [Character]) -> [Character] {
         let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        var pool = word
-        // add a few random letters for variety
-        for _ in 0..<4 { pool.append(alphabet[Int.random(in: 0..<alphabet.count)]) }
+        var pool = alphabet            // every letter is fair game
+        pool.append(contentsOf: word)  // slight bias toward the word's own letters
+        pool.append(contentsOf: word)
         return pool
     }
 }

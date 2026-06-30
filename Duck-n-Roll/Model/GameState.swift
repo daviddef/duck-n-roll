@@ -20,7 +20,25 @@ final class GameState {
         static let highest    = "mdg.highestLevel"
         static let speedTier  = "mdg.speedTier"
         static let jumpTier   = "mdg.jumpTier"
+        static let weaponTier = "mdg.weaponTier"
     }
+
+    /// A blaster upgrade — fires energy bolts at the boulders.
+    struct Weapon {
+        let name: String
+        let cooldown: TimeInterval   // seconds between shots
+        let bolts: Int               // projectiles per shot
+        let spread: CGFloat          // total fan angle (radians)
+        let icon: String
+    }
+    static let weapons: [Weapon] = [
+        Weapon(name: "Pea Shooter",   cooldown: 0.34, bolts: 1, spread: 0.0,  icon: "•"),
+        Weapon(name: "Rapid Blaster", cooldown: 0.17, bolts: 1, spread: 0.0,  icon: "⚡️"),
+        Weapon(name: "Twin Cannon",   cooldown: 0.26, bolts: 2, spread: 0.16, icon: "⊕"),
+        Weapon(name: "Spread Gun",    cooldown: 0.30, bolts: 3, spread: 0.55, icon: "✷"),
+        Weapon(name: "Auto-Cannon",   cooldown: 0.10, bolts: 2, spread: 0.20, icon: "✸"),
+    ]
+    static let maxWeaponTier = weapons.count - 1
 
     // MARK: - Persisted values
 
@@ -40,6 +58,17 @@ final class GameState {
     private(set) var jumpTier: Int {
         didSet { defaults.set(jumpTier, forKey: Key.jumpTier) }
     }
+    private(set) var weaponTier: Int {
+        didSet { defaults.set(weaponTier, forKey: Key.weaponTier) }
+    }
+
+    var weapon: Weapon { GameState.weapons[min(max(0, weaponTier), GameState.maxWeaponTier)] }
+
+    /// Use the cave home base instead of the cottage (cosmetic, persisted).
+    var useCave: Bool {
+        get { defaults.bool(forKey: "mdg.useCave") }
+        set { defaults.set(newValue, forKey: "mdg.useCave") }
+    }
 
     /// The level the player is about to play. Not persisted — set by the menu.
     var currentLevel: Int = 1
@@ -52,6 +81,7 @@ final class GameState {
         highestLevel = max(1, defaults.integer(forKey: Key.highest))
         speedTier    = defaults.integer(forKey: Key.speedTier)
         jumpTier     = defaults.integer(forKey: Key.jumpTier)
+        weaponTier   = defaults.integer(forKey: Key.weaponTier)
     }
 
     // MARK: - Coins
@@ -105,9 +135,25 @@ final class GameState {
         return true
     }
 
+    /// Cost to unlock the NEXT weapon (pricier than stat upgrades).
+    func weaponCost(forTier tier: Int) -> Int { 200 + tier * 150 }
+
+    /// Name of the next weapon you'd unlock, or nil if maxed.
+    var nextWeaponName: String? {
+        weaponTier < GameState.maxWeaponTier ? GameState.weapons[weaponTier + 1].name : nil
+    }
+
+    @discardableResult
+    func buyWeaponUpgrade() -> Bool {
+        guard weaponTier < GameState.maxWeaponTier else { return false }
+        guard spendCoins(weaponCost(forTier: weaponTier)) else { return false }
+        weaponTier += 1
+        return true
+    }
+
     #if DEBUG
     func resetAll() {
-        coins = 0; highestLevel = 1; speedTier = 0; jumpTier = 0; currentLevel = 1
+        coins = 0; highestLevel = 1; speedTier = 0; jumpTier = 0; weaponTier = 0; currentLevel = 1
     }
     #endif
 }

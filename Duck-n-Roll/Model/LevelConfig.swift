@@ -48,13 +48,15 @@ struct LevelConfig {
         let streak = !boss && lvl % 5 == 0
         let mode: LevelMode = boss ? .boss : (streak ? .streak : .word)
 
-        // Difficulty curves — gentle, since the player is also reading & aiming.
-        let spawn   = TimeInterval(2.1 - 1.1 * Double(t))            // 2.1s -> 1.0s
-        let speed   = 150.0 + 300.0 * t                             // 150 -> 450 pts/s
-        let balls   = 0.10 + 0.40 * t                               // few balls early
+        // Difficulty curves — gentle early (you're also reading & aiming) but
+        // ramping hard later: convex speed curve = "faster incremental speed".
+        let td = Double(t)
+        let spawn   = TimeInterval(2.1 - 1.55 * pow(td, 1.15))       // 2.1s -> ~0.55s (busier)
+        let speed   = 150.0 + 490.0 * pow(td, 1.4)                  // 150 -> ~640 pts/s, accelerating
+        let balls   = 0.10 + 0.48 * t                               // more balls later
         let dur      = TimeInterval(22 + 10 * Double(t))            // streak base
-        let quakeInt = TimeInterval(15 - 4 * Double(t))             // quakes get frequent
-        let warn     = TimeInterval(3.0 - 0.9 * Double(t))          // less warning later
+        let quakeInt = TimeInterval(15 - 5 * Double(t))             // quakes get frequent
+        let warn     = TimeInterval(3.0 - 1.0 * Double(t))          // less warning later
 
         return LevelConfig(
             level: lvl,
