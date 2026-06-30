@@ -3,19 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXFileReference section */
-		1A0000000000000000000005 /* Duck-n-Roll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Duck-n-Roll.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000000000000000000005 /* Duck-n-Roll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Duck-n-Roll.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1A0000000000000000000006 /* Duck-n-Roll */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Duck-n-Roll;
-			sourceTree = "<group>";
-		};
+		1A0000000000000000000006 /* Duck-n-Roll */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Duck-n-Roll"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,8 +59,8 @@
 			fileSystemSynchronizedGroups = (
 				1A0000000000000000000006 /* Duck-n-Roll */,
 			);
-			name = Duck-n-Roll;
-			productName = Duck-n-Roll;
+			name = "Duck-n-Roll";
+			productName = "Duck-n-Roll";
 			productReference = 1A0000000000000000000005 /* Duck-n-Roll.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -93,7 +89,6 @@
 			);
 			mainGroup = 1A0000000000000000000002;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 1A0000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -251,6 +246,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = L9SAXP2E2W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Duck 'n' Roll";
@@ -265,7 +261,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.Duck-n-Roll;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.defranceski.Duck-n-Roll";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -281,6 +277,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = L9SAXP2E2W;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Duck 'n' Roll";
@@ -295,7 +292,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mateo.Duck-n-Roll;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.defranceski.Duck-n-Roll";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

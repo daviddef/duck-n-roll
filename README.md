@@ -27,7 +27,7 @@ difficulty/evolution data already scales across all 30 levels + the boss.
 3. Press **Run** (⌘R).
 
 If you run on a physical device, set your signing **Team** under
-*Target → Signing & Capabilities* (the bundle id is `com.mateo.Duck-n-Roll`).
+*Target → Signing & Capabilities* (the bundle id is `com.defranceski.Duck-n-Roll`).
 
 ---
 
