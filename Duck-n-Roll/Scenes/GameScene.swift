@@ -918,6 +918,7 @@ final class GameScene: SKScene {
                          color: Palette.coin, big: true)
             enterHut(door: safeCenter)
         } else {
+            spawnGroundCrack(at: player.position)   // crack opens where the duck stands
             loseLife(reason: "SWALLOWED!")
         }
 
@@ -932,7 +933,7 @@ final class GameScene: SKScene {
 
     /// A jagged chasm rips across the whole screen, flinging debris.
     private func bigQuakeRip(safe: Bool) {
-        let ripY = size.height * 0.13
+        let ripY = hut.position.y          // same ground line as the house/cave
         let gap: CGFloat = 34
         let crack = SKShapeNode(path: fullWidthRipPath(width: size.width, gap: gap))
         crack.fillColor = SKColor(red: 0.03, green: 0.02, blue: 0.05, alpha: 1)

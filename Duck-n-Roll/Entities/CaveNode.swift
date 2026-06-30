@@ -52,14 +52,14 @@ final class CaveNode: SKNode, Shelter {
         mound.zPosition = 0.1
         addChild(mound)
 
-        // Arched opening: a darker throat ring, then the black interior inside it.
-        let outer = SKShapeNode(path: archPath(halfW: 48, bottom: -46, top: 46))
+        // Arched opening: a thin darker throat ring, then a big black interior.
+        let outer = SKShapeNode(path: archPath(halfW: 54, bottom: -48, top: 56))
         outer.fillColor = throat
         outer.strokeColor = .clear
         outer.zPosition = 0.3
         addChild(outer)
 
-        let inner = SKShapeNode(path: archPath(halfW: 38, bottom: -46, top: 36))
+        let inner = SKShapeNode(path: archPath(halfW: 46, bottom: -48, top: 49))
         inner.fillColor = hole
         inner.strokeColor = .clear
         inner.zPosition = 0.4
