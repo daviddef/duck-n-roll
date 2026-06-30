@@ -1,0 +1,54 @@
+# Xcode / Swift
+## Build generated
+build/
+DerivedData/
+*.o
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Various settings
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+
+## Obj-C/Swift specific
+*.swiftpm
+.swiftpm/
+
+## App packaging
+*.app
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+## Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+## CocoaPods (not used, but ignore if added later)
+Pods/
+
+## fastlane (if added later)
+fastlane/report.xml
+fastlane/screenshots/**/*.png
+
+## IDE noise
+*.swp
+*~
+
+## Claude Code local config
+.claude/
